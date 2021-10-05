@@ -1,1 +1,1 @@
-# Goland web server demo
+# Go web server demo
