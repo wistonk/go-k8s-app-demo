@@ -1,1 +1,1 @@
-# go-k8s-app-demo
+# Goland web server demo
