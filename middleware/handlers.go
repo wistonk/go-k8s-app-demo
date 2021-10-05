@@ -8,11 +8,11 @@ import (
 )
 
 
-
 func GetMyFavouriteTree(w http.ResponseWriter, r *http.Request) {
+	color.Blue("Invoke GetMyFavouriteTree API")
+
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	color.Blue("Invoke GetConfigs API")
 
 	json.NewEncoder(w).Encode(models.Results)
 }
