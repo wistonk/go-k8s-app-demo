@@ -8,7 +8,7 @@ package main
 //)
 //
 //
-//func main() {
+func main() {
 //
 //	//Get the value of the SERVE_PORT environment variable
 //	addr := os.Getenv("SERVE_PORT")
@@ -17,4 +17,4 @@ package main
 //
 //	color.Red("server is listening at: localhost" + addr)
 //	log.Fatal(http.ListenAndServe(addr, r))
-//}
+}
