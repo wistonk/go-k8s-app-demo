@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Build the command inside the container.
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o helloworld
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o go-k8s-app-demo
 
 # Use a Docker multi-stage build to create a lean production image.
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
@@ -16,7 +16,7 @@ FROM alpine
 RUN apk add --no-cache ca-certificates
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/helloworld /helloworld
+COPY --from=builder /app/go-k8s-app-demo /go-k8s-app-demo
 
 # Run the web service on container startup.
-CMD ["/helloworld"]
+CMD ["/go-k8s-app-demo"]
