@@ -1,16 +1,16 @@
 package main
 
 import (
+	"github.com/fatih/color"
+	"github.com/wistonk/go-k8s-app-demo/router"
 	"log"
 	"net/http"
 	"os"
-	"github.com/fatih/color"
-	"github.com/wistonk/go-k8s-app-demo/router"
 )
 
 
 func main() {
-
+    //export SERVE_PORT=:8888
 	//Get the value of the SERVE_PORT environment variable
 	addr := os.Getenv("SERVE_PORT")
 
