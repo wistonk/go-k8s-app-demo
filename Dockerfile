@@ -1,22 +1,20 @@
-# Use the offical Golang image to create a build artifact.
-# This is based on Debian and sets the GOPATH to /go.
-# https://hub.docker.com/_/golang
-FROM golang:1.12 as builder
+FROM golang:1.10
 
-# Copy local code to the container image.
-WORKDIR /app
+# Set the Current Working Directory inside the container
+WORKDIR $GOPATH/src/github.com/go-k8s-app-demo
+
+# Copy everything from the current directory to the PWD (Present Working Directory) inside the container
 COPY . .
 
-# Build the command inside the container.
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o go-k8s-app-demo
+# Download all the dependencies
+RUN go get -d -v ./...
 
-# Use a Docker multi-stage build to create a lean production image.
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM alpine
-RUN apk add --no-cache ca-certificates
+# Install the package
+RUN go install -v ./...
 
-# Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/go-k8s-app-demo /go-k8s-app-demo
+# This container exposes port 8080 to the outside world
+EXPOSE 8888
+ENV SERVE_PORT=:8888
 
-# Run the web service on container startup.
-CMD ["/go-k8s-app-demo"]
+# Run the executable
+CMD ["go-k8s-app-demo"]
