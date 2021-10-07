@@ -7,7 +7,13 @@ import (
 	"testing"
 )
 
-
+// Helper Function
+func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest(method, path, nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	return w
+}
 
 func TestGetMyFavouriteTreeRouter(t *testing.T) {
 	req, err := http.NewRequest("GET", "/tree", nil)
