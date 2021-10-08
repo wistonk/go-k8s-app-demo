@@ -8,5 +8,5 @@ spec:
     app: go-k8s-app-demo
   ports:
     - protocol: TCP
-      port: 80
+      port: 8888
       targetPort: 8888

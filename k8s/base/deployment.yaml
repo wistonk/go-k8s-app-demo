@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: go-k8s-app-demo
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: go-k8s-app-demo
@@ -15,5 +15,3 @@ spec:
       containers:
         - name: go-k8s-app-demo
           image: wistonk/go-k8s-app-demo:latest
-          ports:
-            - containerPort: 8888
