@@ -9,7 +9,7 @@ spec:
     - host: local.ecosia.org
       http:
         paths:
-          - path: /tree
+          - path: /
             pathType: Prefix
             backend:
               service:

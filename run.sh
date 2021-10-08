@@ -67,13 +67,14 @@ function install_minikube () {
   else
     echo "Unsupported OS"
   fi
-  chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube
+
 }
 
 function start_minikube () {
   echo "--------------------------- starting minikube ------------------------------ "
+  chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube
   minikube delete --all --purge
-  minikube start
+  minikube start --driver=docker --container-runtime=containerd
 }
 
 function add_host () {
@@ -115,6 +116,7 @@ apply_k8s_manifests () {
 
 app_testing () {
   echo "--------------------------- curl: testing the app ------------------------------ "
+  minikube service go-k8s-app-demo --url
   curl http://local.ecosia.org/tree
 
 }
