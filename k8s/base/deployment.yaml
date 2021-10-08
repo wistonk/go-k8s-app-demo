@@ -17,6 +17,3 @@ spec:
           image: wistonk/go-k8s-app-demo:latest
           ports:
             - containerPort: 8888
-          env:
-            - name: PORT
-              value: "8888"

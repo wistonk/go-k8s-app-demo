@@ -1,7 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 set -o pipefail
+
+HOST_NAME=local.ecosia.org
+REGISTRY_USERNAME=wistonk
+IMAGE_NAME=go-k8s-app-demo
 
 check_installed_package () {
   echo "--------------------------- $1 ----------------------------------- "
@@ -14,7 +18,6 @@ check_installed_package () {
 }
 
 check_minikube_status () {
-  echo "--------------------------- $1 ----------------------------------- "
   if minikube $1 > /dev/null 2>&1; then
     echo "$1: $2"
   else
@@ -26,6 +29,16 @@ check_minikube_status () {
 check_package_version () {
   echo "--------------------------- $1 version ------------------------------ "
   $1 $2
+}
+
+check_host_if_exists () {
+  echo "---------------------------host: $1 ----------------------------------- "
+  if result=$(grep -n $1 /etc/hosts -wc) > /dev/null 2>&1; then
+    echo "$1 exists"
+  else
+    echo "$1 not found. Adding $1..."
+    $2
+  fi
 }
 
 function install_kubectl () {
@@ -63,28 +76,47 @@ function start_minikube () {
   minikube start
 }
 
+function add_host () {
+
+  ip_address=$(minikube ip)
+  host_entry="${ip_address} ${HOST_NAME}"
+
+  echo "Adding host ${host_entry}"
+  echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
+
+}
+
 manage_minikube_addons () {
   echo "--------------------------- enabling minikube addons ------------------------------ "
   minikube addons enable ingress
-  minikube tunnel
+  #minikube tunnel
 }
 
-docker_build_tag_push(){
-  echo "--------------------------- build docker image -------------------------------- "
-  docker build https://github.com/wistonk/go-k8s-app-demo.git
+docker_build_and_scan(){
+  echo "--------------------------- building an image -------------------------------- "
+  docker build -t $IMAGE_NAME .
 
-  echo "--------------------------- tag docker image -------------------------------------"
+  echo "--------------------------- vulnerability scanning (for demo purpose, vuln not fixed) -------------------------------------"
+  #docker scan --file Dockerfile $IMAGE_NAME
+}
 
-  echo "--------------------------- push docker image -------------------------------------"
+docker_tag_and_push(){
+  echo "--------------------------- tag the image -------------------------------------"
+  docker tag $IMAGE_NAME $REGISTRY_USERNAME/$IMAGE_NAME:latest
+
+  echo "--------------------------- push the image -------------------------------------"
+  docker push $REGISTRY_USERNAME/$IMAGE_NAME:latest
 }
 
 apply_k8s_manifests () {
   echo "--------------------------- running k8s manifests ------------------------------ "
-  kubectl get no
-  # Apply resources from a directory containing kustomization.yaml - e.g. dir/kustomization.yaml
-  # kubectl apply -k dir/
-  # sudo minikube service list
-  #  curl http://<LOCAL_IP>:<PORT>
+  kubectl apply -k k8s/base/
+}
+
+app_testing () {
+  echo "--------------------------- curl: testing the app ------------------------------ "
+  curl http://local.ecosia.org/tree
+
 }
 
 main(){
@@ -93,9 +125,12 @@ main(){
   check_minikube_status "status" "running" "minikube not found, will start now ..." start_minikube
   check_package_version "kubectl" "version --short"
   check_package_version "minikube" "version --short"
-  docker_build_tag_push
-  #manage_minikube_addons
-  #apply_k8s_manifests
+  docker_build_and_scan
+  docker_tag_and_push
+  manage_minikube_addons
+  apply_k8s_manifests
+  check_host_if_exists "$HOST_NAME" add_host
+  app_testing
 }
 
 main "$@"

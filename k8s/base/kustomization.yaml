@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: go-k8s-app-demo
+
+commonLabels:
+  app: go-k8s-app-demo
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
