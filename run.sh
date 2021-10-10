@@ -72,9 +72,7 @@ function install_minikube () {
 
 function start_minikube () {
   echo "--------------------------- starting minikube ------------------------------ "
-  #chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube
   minikube delete --all --purge
-  #minikube start --driver=docker --container-runtime=containerd
   minikube start --vm=true --driver=hyperkit
 
 }
@@ -99,7 +97,8 @@ docker_build_and_scan(){
   docker build -t $IMAGE_NAME .
 
   echo "--------------------------- vulnerability scanning (for demo purpose, vuln not fixed) -------------------------------------"
-  #docker scan --file Dockerfile $IMAGE_NAME
+  # uncomment for vulnerability scanning
+  # docker scan --file Dockerfile $IMAGE_NAME
 }
 
 docker_tag_and_push(){
