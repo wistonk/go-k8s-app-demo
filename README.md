@@ -1,84 +1,79 @@
 # Go web server
 
-# Goals
+## Goals
 
-- [x] Create a simple HTTP service that stores and returns configurations that satisfy certain conditions.
-- [x] Create manifests that are automatically deployed to Kubernetes.
+- [x] Coding a web server
+- [x] Automating its deployment into a Kubernetes cluster
 
 ![GO](https://golang.org/lib/godoc/images/go-logo-blue.svg)
 
-# Solution
-## Prerequisites
+## Solution
+This repository contains containerized Go web server, ready for minukube deployment.
+
+### Prerequisites
 - Install [GO](https://golang.org/doc/install)
 
-## Fetching Dependencies
+#### Fetching Dependencies
 Clone this repository to your machine
-`$ git clone https://github.com/hellofreshdevtests/wistonk-devops-test.git`
+`$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
 Initialize the Go modules with your GitHub repository address or your project
-`$ go mod init wistonk-devops-test`
+`$ go mod init go-k8s-app-demo`
 
 You can fetch the Go modules using the following commands.i.e
 ```
 $ go get -u github.com/gorilla/mux 
 $ go get -u github.com/fatih/color
 ```
-## Scaffolding the GO HTTP service
+#### Scaffolding the GO web server
 Create the app using the below file structure
 ```
 |--main.go
 |--router/router.go
 |--middleware/handlers.go
 |--models/models.go
-|--k8s/deploy.yaml
+|--k8s/base/deploy.yaml
+           /deployment.yaml
+           /ingress.yaml
+           /kustomization.yaml
+           /service.yaml
 ```
 The `main.go` file contains the entry point for our application. It should contain the following code:
 ```
+package main
+
 import (
 	"github.com/fatih/color"
+	"github.com/wistonk/go-k8s-app-demo/router"
 	"log"
 	"net/http"
-	"os"
-	"wistonk-devops-test/router"
 )
 
+
 func main() {
-
-	//Get the value of the SERVE_PORT environment variable
-	addr := os.Getenv("SERVE_PORT")
-
 	r := router.Router()
 
-	color.Red("server is listening at: localhost" + addr)
-	log.Fatal(http.ListenAndServe(addr, r))
+	color.Red("server is listening at: localhost:8888")
+	log.Fatal(http.ListenAndServe(":8888", r))
 }
 
 ```
 
-> Before you run this, make sure you export the `SERVE_PORT` env variable i.e. `export SERVE_PORT=:4000`. 
-We then have `router/router.go` which we use to route our request to a particular function. Check below the content of this file.
+> We then have `router/router.go` which we use to route our request to a `GetMyFavouriteTree` function. Check below the content of this file.
 
 ```
 package router
 
 import (
-	"wistonk-devops-test/middleware"
-
 	"github.com/gorilla/mux"
+	"github.com/wistonk/go-k8s-app-demo/middleware"
 )
 
 // Router is exported and used in main.go
 func Router() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
-
-	router.HandleFunc("/", middleware.Home)
-	router.HandleFunc("/configs", middleware.GetConfigs).Methods("GET")
-	router.HandleFunc("/configs", middleware.PostConfigs).Methods("POST")
-	router.HandleFunc("/configs/{name}", middleware.GetConfigsByName).Methods("GET")
-	router.HandleFunc("/configs/{name}", middleware.UpdateConfigsByName).Methods("PATCH")
-	router.HandleFunc("/configs/{name}", middleware.DeleteConfigsByName).Methods("DELETE")
-	router.HandleFunc("/search", middleware.SearchMetadataByKeyValue).Methods("GET").Queries("metadata.monitoring.enabled", "{status}")
+	router.HandleFunc("/tree", middleware.GetMyFavouriteTree).Methods("GET")
 
 	return router
 }
@@ -91,237 +86,98 @@ package middleware
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/fatih/color"
-	"github.com/gorilla/mux"
-	"io/ioutil"
-	"log"
+	"github.com/wistonk/go-k8s-app-demo/models"
 	"net/http"
-	"wistonk-devops-test/models"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/plain")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, ":: Home page ::")
-}
 
-func GetConfigs(w http.ResponseWriter, r *http.Request) {
+func GetMyFavouriteTree(w http.ResponseWriter, r *http.Request) {
+	color.Blue("Invoke GetMyFavouriteTree API")
+
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	color.Blue("Invoke GetConfigs API")
 
-	json.NewEncoder(w).Encode(models.Configs)
-}
-
-func PostConfigs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	color.Magenta("Invoke PostConfigs API")
-
-	var newConfig models.Config
-
-	// Convert r.Body into a readable format
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the name and metadata object only in order to update")
-		w.WriteHeader(http.StatusBadRequest)
-	}
-	params := mux.Vars(r)
-	log.Printf("params %s...", params)
-
-	json.Unmarshal(reqBody, &newConfig)
-
-	// Add the newly created config to the array of configs
-	models.Configs = append(models.Configs, newConfig)
-
-	// Return the 201 created status code
-	w.WriteHeader(http.StatusCreated)
-	// Return the newly created config
-	json.NewEncoder(w).Encode(newConfig)
-}
-
-func GetConfigsByName(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	color.Green("Invoke GetConfigsByName API")
-
-	// Get the Name from the url
-	name := mux.Vars(r)["name"]
-
-	// Get the details from an existing config
-	// Use the blank identifier to avoid creating a value that will not be used
-	for _, singleConfig := range models.Configs {
-		if singleConfig.Name == name {
-			json.NewEncoder(w).Encode(singleConfig)
-		}
-	}
-}
-
-func UpdateConfigsByName(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	color.Yellow("Invoke UpdateConfigsByName API")
-
-	// Get the Name from the url
-	name := mux.Vars(r)["name"]
-
-	var updatedConfig models.Config
-	// Convert r.Body into a readable formart
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Kindly enter data with the config name and metadata struct  in order to update")
-	}
-
-	json.Unmarshal(reqBody, &updatedConfig)
-
-	for i, singleConfig := range models.Configs {
-		if singleConfig.Name == name {
-			singleConfig.Metadata = updatedConfig.Metadata
-			models.Configs[i] = singleConfig
-			json.NewEncoder(w).Encode(singleConfig)
-		}
-	}
-}
-
-func DeleteConfigsByName(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/plain")
-	color.White("Invoke DeleteConfigsByName API")
-
-	// Get the Name from the url
-	name := mux.Vars(r)["name"]
-
-	// Get the details from an existing config
-	// Use the blank identifier to avoid creating a value that will not be used
-	for i, singleConfig := range models.Configs {
-		if singleConfig.Name == name {
-			models.Configs = append(models.Configs[:i], models.Configs[i+1:]...)
-			fmt.Fprintf(w, "The config with name '%v' has been deleted successfully", name)
-		}
-	}
-}
-
-func SearchMetadataByKeyValue(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	color.Green("Invoke SearchMetadataByKeyValue API")
-
-	var configurations []models.Config
-
-	// Get the Name from the url
-	status := mux.Vars(r)["status"]
-
-	//Get the details from an existing config
-	for _, singleConfig := range models.Configs {
-		if singleConfig.Metadata.Monitoring.Enabled == status {
-			configurations = append(configurations, singleConfig)
-		}
-	}
-	json.NewEncoder(w).Encode(configurations)
+	json.NewEncoder(w).Encode(models.Results)
 }
 
 ```
-## Go Tests
-In this part, we will write tests based on the requirements. I have a simple test to check the expected output of `/` path. This calls the `Home` function on the `middleware/handlers.go`. See below code structure.
+#### Go Tests
+In this part, we will write some tests.i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
 
 ```
 package main
 
 import (
+	"github.com/wistonk/go-k8s-app-demo/middleware"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"wistonk-devops-test/middleware"
 )
 
-func TestHomeHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+// Helper Function
+func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest(method, path, nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	return w
+}
+
+func TestGetMyFavouriteTreeRouter(t *testing.T) {
+	req, err := http.NewRequest("GET", "/tree", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(middleware.Home)
 
+	handler := http.HandlerFunc(middleware.GetMyFavouriteTree)
 	handler.ServeHTTP(rr, req)
 
+	rr.Header().Set("content-type", "application/json")
+
+	// Check HTTP Status Code
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
 
-	expected := `:: Home page ::`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+	// Check Request HTTP Method
+	if status := req.Method; status != http.MethodGet {
+		t.Errorf("handler returned method: got %v want %v",
+			status, req.Method)
+	}
+
+	// Check Empty Response
+	if rr.Body.String() == "{}" {
+		t.Errorf("handler returned unexpected body: got an empty json %v want %v",
+			"{}", rr.Body.String())
 	}
 }
-
 ```
 
-## Setting up manifests for Kubernetes
-
-### Containerize the HTTP Service
-In order to deploy the app to our Kubernetes cluster, we create a `Dockerfile` for building the image. Below is an example.
+#### Containerize the Go web server
+In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. Below is an example.
 
 ```
-ROM golang:alpine
+FROM golang:1.16-alpine as builder
 
-WORKDIR /app
-COPY . /app
+COPY . /src/
+WORKDIR /src
 
-RUN go build -o main .
+EXPOSE 8888
 
-CMD ["/app/main"]
+RUN go build
+
+FROM alpine
+
+COPY --from=builder /src/go-k8s-app-demo /
+
+ENTRYPOINT ["/go-k8s-app-demo"]
 ```
-- _Build the image with this command_
-`docker build -t wistonk-devops-test .`
 
-- _Check the image that we created_
- `docker images`
+We then use [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) to build, scan, tag and push the docker image to our preffered redistry. We will see detailed view the bash script later on.
 
-- _Tag the image with any registry format.i.e GCR, ACR, ECR, or Dockerhub_
-  `docker tag registry-username/wistonk-devops-test:tagname`
-
-- _Push the image to the registry_
-`docker push registry-username/wistonk-devops-test:tagname`
-
-### Setup Cluster
-#### Prerequisites
-- install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
-
-You can setup your cluster on variuos options:
-- via [EKS](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
-- via [GKE](https://cloud.google.com/kubernetes-engine/docs/quickstart#create_cluster)
-- via [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-
-Once the cluster is successfully created, apply the Kubernetes manifests with below command.
-`kubectl apply -f k8s/deploy.yaml`
-
-## Testing the app with a rest client.
-#### Prerequisites
-- install [Postman](https://www.postman.com/downloads/)
-
-You can use any rest clients of your choice to test the app. Here I use postman. Navigate to the `postman` directory to see sample payloads collection named `Hellofresh.postman_collection.json`. Import it into your postman client and test them. You should get the expected result.
-
-
-
-
-
-
-
-This repository contains containerized Go web server, ready for minukube deployment.
-
-## Getting Started
-
-### Development
-
-#### Boostrapping the app
-#### Testings (Go tests)
-
-### Deployment
-#### Containerization//Dockerfile
 #### Bash Script
 In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app. 
 
