@@ -6,15 +6,18 @@
 - [x] Automating its deployment into a Kubernetes cluster
 
 ![GO](https://golang.org/lib/godoc/images/go-logo-blue.svg)
+<p>
 
 ## Solution
-This repository contains containerized Go web server, ready for minukube deployment.
+>This repository contains containerized Go web server, ready for minukube deployment.
 
-### Prerequisites
+### Coding a web server
+#### Getting Started
+##### Prerequisites
 - Install [GO](https://golang.org/doc/install)
 
 #### Fetching Dependencies
-Clone this repository to your machine
+> Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
 Initialize the Go modules with your GitHub repository address or your project
@@ -25,8 +28,8 @@ You can fetch the Go modules using the following commands.i.e
 $ go get -u github.com/gorilla/mux 
 $ go get -u github.com/fatih/color
 ```
-#### Scaffolding the GO web server
-Create the app using the below file structure
+#### Create Project Structure
+> Create the app using the below file structure
 ```
 |--main.go
 |--router/router.go
@@ -59,7 +62,7 @@ func main() {
 
 ```
 
-> We then have `router/router.go` which we use to route our request to a `GetMyFavouriteTree` function. Check below the content of this file.
+We then have `router/router.go` which we use to route our request to a `GetMyFavouriteTree` function. Check below the content of this file.
 
 ```
 package router
@@ -103,7 +106,7 @@ func GetMyFavouriteTree(w http.ResponseWriter, r *http.Request) {
 
 ```
 #### Go Tests
-In this part, we will write some tests.i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
+> In this part, we will write some tests.i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
 
 ```
 package main
@@ -157,7 +160,7 @@ func TestGetMyFavouriteTreeRouter(t *testing.T) {
 ```
 
 #### Containerize the Go web server
-In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. Below is an example.
+> In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. Below is an example.
 
 ```
 FROM golang:1.16-alpine as builder
@@ -177,6 +180,15 @@ ENTRYPOINT ["/go-k8s-app-demo"]
 ```
 
 We then use [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) to build, scan, tag and push the docker image to our preffered redistry. We will see detailed view the bash script later on.
+
+####  Test locally
+- Build image
+- Run the image
+- Use postman to test
+
+> Once this is successfully, lets proceed and install and run minikube, we will alter deploy the image and test it there. We have automated this process and go use the provided script.
+
+### Automating its deployment into a Kubernetes cluster
 
 #### Bash Script
 In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app. 
