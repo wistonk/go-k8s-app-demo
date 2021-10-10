@@ -92,7 +92,6 @@ function add_host () {
 manage_minikube_addons () {
   echo "--------------------------- enabling minikube addons ------------------------------ "
   minikube addons enable ingress
-  #minikube tunnel
 }
 
 docker_build_and_scan(){

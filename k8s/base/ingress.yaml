@@ -7,7 +7,7 @@ metadata:
       location /tree {
           return 302 /tree;
       }
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.org/client-max-body-size: "4m"
 spec:
   rules:
     - host: local.ecosia.org
