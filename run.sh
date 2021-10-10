@@ -72,9 +72,11 @@ function install_minikube () {
 
 function start_minikube () {
   echo "--------------------------- starting minikube ------------------------------ "
-  chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube
+  #chown -R $USER $HOME/.minikube; chmod -R u+wrx $HOME/.minikube
   minikube delete --all --purge
-  minikube start --driver=docker --container-runtime=containerd
+  #minikube start --driver=docker --container-runtime=containerd
+  minikube start --vm=true --driver=hyperkit
+
 }
 
 function add_host () {
@@ -111,13 +113,19 @@ docker_tag_and_push(){
 
 apply_k8s_manifests () {
   echo "--------------------------- running k8s manifests ------------------------------ "
+  kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
   kubectl apply -k k8s/base/
 }
 
 app_testing () {
-  echo "--------------------------- curl: testing the app ------------------------------ "
+  echo "--------------------------- checking the app service ---------------------------- "
   minikube service go-k8s-app-demo --url
+
+  echo "############################ testing the hostname ############################### "
+  sleep 10;
   curl http://local.ecosia.org/tree
+
+  echo "################ congratulations!! you successfully deployment the app ########## "
 
 }
 
