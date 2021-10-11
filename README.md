@@ -1,4 +1,4 @@
-# Go web server
+# Deploying a GO web server on Kubernetes
 
 ## Goals
 
@@ -14,7 +14,12 @@
 ### Coding a web server
 #### Getting Started
 ##### Prerequisites
-- Install [GO](https://golang.org/doc/install)
+- Basic knowledge of the [Go programming language](https://golang.org/)
+- Go development environment already setup, If not install [GO](https://golang.org/doc/install)
+- Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
+- Account in a container registry (this uses [Docker Hub](https://hub.docker.com/)).
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
+- [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
 #### Fetching Dependencies
 > Clone this repository to your machine
