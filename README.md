@@ -10,7 +10,7 @@
 ## Solution
 >This repository contains containerized Go web server, ready for minikube deployment.
 
-### 1. Prerequisites	
+### Prerequisites	
 - Basic knowledge of the [Go programming language](https://golang.org/)
 - Go development environment already setup, including `$GOPATH`. If not install [GO](https://golang.org/doc/install)
 - Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
@@ -18,7 +18,7 @@
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
 - [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
-## 2. Coding a web server
+## Coding a web server
 #### Getting Started ...
 > Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
@@ -200,7 +200,7 @@ Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTr
 _Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes_
 
 
-## 3. Automating its deployment into a Kubernetes cluster (Minikube)
+## Automating its deployment into a Kubernetes cluster (Minikube)
 
 #### Bash Script
 In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app automatically.
