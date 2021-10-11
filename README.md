@@ -200,7 +200,7 @@ Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTr
 _Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes_
 
 
-## Automating its deployment into a Kubernetes cluster (Minikube)
+## Automating deployment into a Kubernetes cluster (Minikube)
 
 #### Bash Script
 In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app automatically.
