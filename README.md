@@ -5,7 +5,7 @@
 - [x] Coding a web server
 - [x] Automating its deployment into a Kubernetes cluster
 
-![GO](https://golang.org/lib/godoc/images/go-logo-blue.svg)
+![GO](https://suraj.io/post/2021/05/k8s-import/gok8s.jpg)
 <p>
 
 ## Solution
@@ -27,9 +27,9 @@
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
 Initialize the Go modules with your GitHub repository address or your project
-`$ go mod init go-k8s-app-demo`
+`$ go mod init github.com/wistonk/go-k8s-app-demo`
 
-You can fetch the Go modules using the following commands.i.e
+You can then fetch the Go modules using the following commands.i.e
 ```
 $ go get -u github.com/gorilla/mux 
 $ go get -u github.com/fatih/color
@@ -38,6 +38,8 @@ $ go get -u github.com/fatih/color
 > Create the app using the below file structure
 ```
 |--main.go
+|--main_test.go
+|--Dockerfile
 |--router/router.go
 |--middleware/handlers.go
 |--models/models.go
