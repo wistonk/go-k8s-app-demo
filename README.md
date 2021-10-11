@@ -12,8 +12,8 @@
 >This repository contains containerized Go web server, ready for minukube deployment.
 
 ### Coding a web server
-#### Getting Started
-##### Prerequisites
+
+#### Prerequisites
 - Basic knowledge of the [Go programming language](https://golang.org/)
 - Go development environment already setup, If not install [GO](https://golang.org/doc/install)
 - Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
@@ -21,6 +21,7 @@
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
 - [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
+#### Getting Started
 #### Fetching Dependencies
 > Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
