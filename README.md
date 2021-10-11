@@ -189,19 +189,24 @@ ENTRYPOINT ["/go-k8s-app-demo"]
 > To test the web server and confirm all is working ok, we need to build a docker image and run it. See below commands
 	
 - _Build the image with this command_
-`docker build -t go-k8s-app-demo .`
+	
+   `docker build -t go-k8s-app-demo .`
 
 - _Check the image that we created_
- `docker images`
+	
+  `docker images`
 
 - _Tag the image with any registry format.i.e GCR, ACR, ECR, or Dockerhub_
+	
   `docker tag registry-username/go-k8s-app-demo:tagname`
 
 - _Push the image to the registry_
-`docker push registry-username/go-k8s-app-demo:tagname`
 	
-- Finally, run it	
-`docker run -d -p 80:8888 go-k8s-app-demo:latest`
+  `docker push registry-username/go-k8s-app-demo:tagname`
+	
+- Finally, run it
+	
+  `docker run -d -p 80:8888 go-k8s-app-demo:latest`
 
 Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTree":"Moringa"}`. 
 Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes
