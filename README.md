@@ -15,8 +15,8 @@
 - Go development environment already setup, including `$GOPATH`. If not install [GO](https://golang.org/doc/install)
 - Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
 - Account in a container registry (this uses [Docker Hub](https://hub.docker.com/)).
-- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
-- [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh))
+- [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh))
 
 ## Coding a web server
 ### Getting Started ...
@@ -46,7 +46,7 @@ $ go get -u github.com/fatih/color
            /kustomization.yaml
            /service.yaml
 ```
-The `main.go` file is the entry point for our application. The server will be listening at: `http://localhost:8888` It contains the following code:
+The `main.go` file is the entry point for our application. The server will be listening at: `http://localhost:8888`. It contains the below code:
 ```
 package main
 
@@ -191,7 +191,7 @@ ENTRYPOINT ["/go-k8s-app-demo"]
 	
    `docker build -t go-k8s-app-demo .`
 	
-- _Run it_
+- _Run the image_
 	
   `docker run -d -p 80:8888 go-k8s-app-demo:latest`
 
