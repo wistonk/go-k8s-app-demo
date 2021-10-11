@@ -9,7 +9,8 @@
 
 ## Solution
 >This repository contains containerized Go web server, ready for minikube deployment.
-### Prerequisites
+
+### 1. Prerequisites	
 - Basic knowledge of the [Go programming language](https://golang.org/)
 - Go development environment already setup, including `$GOPATH`. If not install [GO](https://golang.org/doc/install)
 - Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
@@ -17,10 +18,8 @@
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
 - [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
-### Coding a web server
-
-#### Getting Started
-#### Cloning the repository
+### 2. Coding a web server
+#### Getting Started ...
 > Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
@@ -188,34 +187,23 @@ ENTRYPOINT ["/go-k8s-app-demo"]
 ####  Test locally
 > To test the web server and confirm all is working ok, we need to build a docker image and run it. See below commands
 	
-- _Build the image with this command_
+- _Build the image_
 	
    `docker build -t go-k8s-app-demo .`
-
-- _Check the image that we created_
 	
-  `docker images`
-
-- _Tag the image with any registry format.i.e GCR, ACR, ECR, or Dockerhub_
-	
-  `docker tag registry-username/go-k8s-app-demo:tagname`
-
-- _Push the image to the registry_
-	
-  `docker push registry-username/go-k8s-app-demo:tagname`
-	
-- Finally, run it
+- _Run it_
 	
   `docker run -d -p 80:8888 go-k8s-app-demo:latest`
 
 Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTree":"Moringa"}`. 
-Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes
+
+_Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes_
 
 
-### Automating its deployment into a Kubernetes cluster
+### 3. Automating its deployment into a Kubernetes cluster (Minikube)
 
 #### Bash Script
-In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app. 
+In this demo, we use this [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) which creates a [minikube](https://minikube.sigs.k8s.io/docs/start/) cluster and deploys the demo app automatically.
 
 To grant the permission, run 
 ```
