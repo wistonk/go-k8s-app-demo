@@ -189,18 +189,23 @@ ENTRYPOINT ["/go-k8s-app-demo"]
 > To test the web server and confirm all is working ok, we need to build a docker image and run it. See below commands
 	
 Build the image with this command
+	
 `docker build -t go-k8s-app-demo .`
 
 Check the image that we created
+	
 `docker images`
 
-Tag the image with any registry format.i.e GCR, ACR, ECR, or Dockerhub
-`docker tag registry-username/wistonk-devops-test:tagname`
+Tag the image with any registry format i.e GCR, ACR, ECR, or Dockerhub
+	
+`docker tag registry-username/go-k8s-app-demo:tagname`
 
 Push the image to the registry
-`docker push registry-username/wistonk-devops-test:tagname`
+	
+`docker push registry-username/go-k8s-app-demo:tagname`
 
 Finally, run it
+	
 `docker run -d -p 80:8888 go-k8s-app-demo:latest`
 
 Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTree":"Moringa"}`. 
