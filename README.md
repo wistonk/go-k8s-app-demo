@@ -1,40 +1,38 @@
 # Deploying a GO web server on Kubernetes
-
+![GO](https://miro.medium.com/max/4800/1*HyemvyVt7JI25k-_cTKMcg.png)
 ## Goals
 
 - [x] Coding a web server
 - [x] Automating its deployment into a Kubernetes cluster
 
-![GO](https://suraj.io/post/2021/05/k8s-import/gok8s.jpg)
 <p>
 
 ## Solution
->This repository contains containerized Go web server, ready for minukube deployment.
-
-### Coding a web server
-
-#### Prerequisites
+>This repository contains containerized Go web server, ready for minikube deployment.
+### Prerequisites
 - Basic knowledge of the [Go programming language](https://golang.org/)
-- Go development environment already setup, If not install [GO](https://golang.org/doc/install)
+- Go development environment already setup, including `$GOPATH`. If not install [GO](https://golang.org/doc/install)
 - Docker environment running. If not install [docker](https://docs.docker.com/get-docker/)
 - Account in a container registry (this uses [Docker Hub](https://hub.docker.com/)).
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed on your local computer (if not we still install it via a the bash script)
 - [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
+### Coding a web server
+
 #### Getting Started
-#### Fetching Dependencies
+#### Cloning the repository
 > Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
 Initialize the Go modules with your GitHub repository address or your project
 `$ go mod init github.com/wistonk/go-k8s-app-demo`
 
-You can then fetch the Go modules using the following commands.i.e
+Fetch the Go modules using the following commands.i.e
 ```
 $ go get -u github.com/gorilla/mux 
 $ go get -u github.com/fatih/color
 ```
-#### Create Project Structure
+#### Project Structure
 > Create the app using the below file structure
 ```
 |--main.go
@@ -49,7 +47,7 @@ $ go get -u github.com/fatih/color
            /kustomization.yaml
            /service.yaml
 ```
-The `main.go` file contains the entry point for our application. It should contain the following code:
+The `main.go` file is the entry point for our application. The server will be listening at: `http://localhost:8888` It contains the following code:
 ```
 package main
 
@@ -70,7 +68,7 @@ func main() {
 
 ```
 
-We then have `router/router.go` which we use to route our request to a `GetMyFavouriteTree` function. Check below the content of this file.
+We then have `router/router.go` which we use to route our request to a `GetMyFavouriteTree` function. The function accepts `GET` method. Check below the content of this file.
 
 ```
 package router
@@ -90,7 +88,7 @@ func Router() *mux.Router {
 }
 
 ```
-Finally, we have the `middleware/handlers.go`. Here we implement the functions and the logic required. See below the code structure.
+Finally, we have the `middleware/handlers.go`. Here we implement the functions and the logic required. We return the expected response of _content-type_ `application/json` and `HTTP 200 OK` See below the code structure.
 
 ```
 package middleware
@@ -114,7 +112,7 @@ func GetMyFavouriteTree(w http.ResponseWriter, r *http.Request) {
 
 ```
 #### Go Tests
-> In this part, we will write some tests.i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
+> In this part, we will write some tests i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
 
 ```
 package main
@@ -168,7 +166,7 @@ func TestGetMyFavouriteTreeRouter(t *testing.T) {
 ```
 
 #### Containerize the Go web server
-> In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. Below is an example.
+> In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. See below contents.
 
 ```
 FROM golang:1.16-alpine as builder
@@ -187,14 +185,27 @@ COPY --from=builder /src/go-k8s-app-demo /
 ENTRYPOINT ["/go-k8s-app-demo"]
 ```
 
-We then use [bash script](https://github.com/wistonk/go-k8s-app-demo/blob/main/run.sh) to build, scan, tag and push the docker image to our preffered redistry. We will see detailed view the bash script later on.
-
 ####  Test locally
-- Build image
-- Run the image
-- Use postman to test
+> To test the web server and confirm all is working ok, we need to build a docker image and run it. See below commands
+	
+Build the image with this command
+`docker build -t go-k8s-app-demo .`
 
-> Once this is successfully, lets proceed and install and run minikube, we will alter deploy the image and test it there. We have automated this process and go use the provided script.
+Check the image that we created
+`docker images`
+
+Tag the image with any registry format.i.e GCR, ACR, ECR, or Dockerhub
+`docker tag registry-username/wistonk-devops-test:tagname`
+
+Push the image to the registry
+`docker push registry-username/wistonk-devops-test:tagname`
+
+Finally, run it
+`docker run -d -p 80:8888 go-k8s-app-demo:latest`
+
+Visit your browser at `http://localhost/tree`,  you should view `{"myFavouriteTree":"Moringa"}`. 
+Congratulations!!, the web server is working ok, we can then proceed and deploy to kubernetes
+
 
 ### Automating its deployment into a Kubernetes cluster
 
@@ -232,6 +243,3 @@ Our script automates minikube, installation, starting the cluster, deploying and
 ### Testing the host
 
 Open your terminal and run `curl http://local.ecosia.org/tree`. You should be able to view the output as `{"myFavouriteTree":"Moringa"}`
-
-# Go web server demo
-docker run -d -p 80:8888 go-k8s-app-demo:latest
