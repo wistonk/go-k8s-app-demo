@@ -19,7 +19,7 @@
 - [Kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) command line (kubectl CLI) installed (if not, we still install it via the bash script)
 
 ## Coding a web server
-#### Getting Started ...
+### Getting Started ...
 > Clone this repository to your machine
 `$ git clone https://github.com/wistonk/go-k8s-app-demo.git`
 
@@ -31,7 +31,7 @@ Fetch the Go modules using the following commands.i.e
 $ go get -u github.com/gorilla/mux 
 $ go get -u github.com/fatih/color
 ```
-#### Project Structure
+### Project Structure
 > Create the app using the below file structure
 ```
 |--main.go
@@ -110,7 +110,7 @@ func GetMyFavouriteTree(w http.ResponseWriter, r *http.Request) {
 }
 
 ```
-#### Go Tests
+### Go Tests
 > In this part, we will write some tests i.e. `Check HTTP Status Response Code`, `Check Request HTTP Method` or even `Check Empty Response`. See below code structure.
 
 ```
@@ -164,7 +164,7 @@ func TestGetMyFavouriteTreeRouter(t *testing.T) {
 }
 ```
 
-#### Containerize the Go web server
+### Containerize the Go web server
 > In order to deploy the app to our minikube cluster, we create a `Dockerfile` for building the image. See below contents.
 
 ```
@@ -184,7 +184,7 @@ COPY --from=builder /src/go-k8s-app-demo /
 ENTRYPOINT ["/go-k8s-app-demo"]
 ```
 
-####  Test locally
+###  Test locally
 > To test the web server and confirm all is working ok, we need to build a docker image and run it. See below commands
 	
 - _Build the image_
